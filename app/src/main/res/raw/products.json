@@ -1,0 +1,82 @@
+{
+  "products": [
+    {
+      "productId": 1,
+      "productName": "Samsung Galaxy S24 Ultra",
+      "productCost": "1199.99",
+      "count": 12,
+      "productImageUrl": "images/galaxy_s24_ultra.png",
+      "productCharacteristicId": 1
+    },
+    {
+      "productId": 2,
+      "productName": "iPhone 15 Pro Max",
+      "productCost": "1299.00",
+      "count": 8,
+      "productImageUrl": "images/iphone_15_pro_max.png",
+      "productCharacteristicId": 2
+    },
+    {
+      "productId": 3,
+      "productName": "Google Pixel 8 Pro",
+      "productCost": "999.99",
+      "count": 15,
+      "productImageUrl": "images/pixel_8_pro.png",
+      "productCharacteristicId": 3
+    },
+    {
+      "productId": 4,
+      "productName": "Xiaomi 14 Ultra",
+      "productCost": "899.99",
+      "count": 10,
+      "productImageUrl": "images/xiaomi_14_ultra.png",
+      "productCharacteristicId": 4
+    }
+  ],
+  "productCharacteristics": [
+    {
+      "productCharacteristicId": 1,
+      "phoneModel": "Samsung Galaxy S24 Ultra",
+      "phoneOs": "Android 14 (One UI 6.1)",
+      "phoneDisplay": "6.8\" Dynamic AMOLED 2X (QHD+)",
+      "phoneRefreshRate": 120,
+      "phoneProcessor": "Snapdragon 8 Gen 3",
+      "phoneStorage": 512,
+      "phoneRam": 12,
+      "phoneBatteryCapacity": 5000
+    },
+    {
+      "productCharacteristicId": 2,
+      "phoneModel": "iPhone 15 Pro Max",
+      "phoneOs": "iOS 17",
+      "phoneDisplay": "6.7\" Super Retina XDR OLED",
+      "phoneRefreshRate": 120,
+      "phoneProcessor": "Apple A17 Pro",
+      "phoneStorage": 256,
+      "phoneRam": 8,
+      "phoneBatteryCapacity": 4422
+    },
+    {
+      "productCharacteristicId": 3,
+      "phoneModel": "Google Pixel 8 Pro",
+      "phoneOs": "Android 14 (Pixel UI)",
+      "phoneDisplay": "6.7\" LTPO OLED (QHD+)",
+      "phoneRefreshRate": 120,
+      "phoneProcessor": "Google Tensor G3",
+      "phoneStorage": 256,
+      "phoneRam": 12,
+      "phoneBatteryCapacity": 5050
+    },
+    {
+      "productCharacteristicId": 4,
+      "phoneModel": "Xiaomi 14 Ultra",
+      "phoneOs": "Android 14 (HyperOS)",
+      "phoneDisplay": "6.73\" AMOLED (QHD+)",
+      "phoneRefreshRate": 120,
+      "phoneProcessor": "Snapdragon 8 Gen 3",
+      "phoneStorage": 512,
+      "phoneRam": 16,
+      "phoneBatteryCapacity": 5000
+    }
+  ]
+}

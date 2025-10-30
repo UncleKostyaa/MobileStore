@@ -1,4 +1,10 @@
 package com.unclekostya.bookstore.ui.product
 
-class ProductScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun ProductScreen(
+    productId: Int
+) {
+
 }

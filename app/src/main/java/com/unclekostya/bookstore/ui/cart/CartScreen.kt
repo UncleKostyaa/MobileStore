@@ -1,4 +1,10 @@
 package com.unclekostya.bookstore.ui.cart
 
-class CartScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun CartScreen(
+
+) {
+
 }
