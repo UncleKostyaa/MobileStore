@@ -1,21 +1,64 @@
 package com.unclekostya.bookstore.ui.viewmodel
 
-import androidx.room.TypeConverter
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
-import com.google.gson.Gson
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.unclekostya.bookstore.data.local.entity.Cart
+import com.unclekostya.bookstore.data.repository.StoreRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class Converters {
-    private val gson = Gson()
+class CartViewModel (
+    private val repository: StoreRepository
+) : ViewModel() {
+    val cartStatus = mutableStateOf("Cart is loading...")
 
-    @TypeConverter
-    fun fromIntList(list: List<Int>?): String {
-        return gson.toJson(list)
+    val cart = mutableStateOf<Cart?>(null)
+
+    fun gCart() {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    cart.value = repository.getCart()
+                }
+            } catch (e: Exception) {
+                cartStatus.value = "Error: ${e.message}"
+            }
+        }
     }
 
-    @TypeConverter
-    fun toIntList(data: String?): List<Int> {
-        if (data.isNullOrEmpty()) return emptyList()
-        val type = object : TypeToken<List<Int>>() {}.type
-        return gson.fromJson(data, type)
+    fun clearCart() {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                     repository.clearCart()
+                }
+            } catch (e: Exception) {
+                cartStatus.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun addItemToCart(
+        productId: Int
+    ) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    var currentCart = repository.getCart()
+                    if (!currentCart.listOfProductsId.contains(productId)) {
+                        val updatedList = currentCart.listOfProductsId + productId
+                        currentCart = currentCart.copy(listOfProductsId = updatedList)
+                    }
+                    repository.insertOrUpdateCart(currentCart)
+                    withContext(Dispatchers.Main) {
+                        cart.value = currentCart
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

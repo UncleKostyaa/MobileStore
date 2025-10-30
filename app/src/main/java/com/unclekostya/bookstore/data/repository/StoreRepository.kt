@@ -20,4 +20,6 @@ interface StoreRepository {
     suspend fun insertProduct(product: Product)
 
     suspend fun insertProductCharacteristic(productCharacteristic: ProductCharacteristic)
+
+    suspend fun insertOrUpdateCart(cart: Cart)
 }

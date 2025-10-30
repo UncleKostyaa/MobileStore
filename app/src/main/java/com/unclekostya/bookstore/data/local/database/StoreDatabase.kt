@@ -5,8 +5,12 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverter
+import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.unclekostya.bookstore.R
 import com.unclekostya.bookstore.data.local.dao.StoreDao
 import com.unclekostya.bookstore.data.local.entity.Cart
@@ -17,11 +21,27 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
+class Converters {
+    private val gson = Gson()
+
+    @TypeConverter
+    fun fromIntList(list: List<Int>?): String {
+        return gson.toJson(list)
+    }
+
+    @TypeConverter
+    fun toIntList(data: String?): List<Int> {
+        if (data.isNullOrEmpty()) return emptyList()
+        val type = object : TypeToken<List<Int>>() {}.type
+        return gson.fromJson(data, type)
+    }
+}
 @Database(
     entities = [Product::class, ProductCharacteristic::class, Cart::class],
     version = 1,
     exportSchema =  false
 )
+@TypeConverters(Converters::class)
 abstract class ProductDatabase: RoomDatabase() {
     abstract fun productDao(): StoreDao
 

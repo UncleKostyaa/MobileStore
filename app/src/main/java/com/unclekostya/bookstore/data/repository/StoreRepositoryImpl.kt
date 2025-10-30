@@ -26,4 +26,7 @@ class StoreRepositoryImpl(private val storeDao: StoreDao): StoreRepository {
 
     override suspend fun insertProductCharacteristic(productCharacteristic: ProductCharacteristic) =
         storeDao.insertProductCharacteristic(productCharacteristic)
+
+    override suspend fun insertOrUpdateCart(cart: Cart) =
+        storeDao.insertOrUpdateCart(cart)
 }
