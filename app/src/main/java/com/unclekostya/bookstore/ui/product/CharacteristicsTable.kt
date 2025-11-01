@@ -18,29 +18,17 @@ fun CharacteristicsTable(
     characteristic: String,
     model: MutableState<ProductCharacteristic?>
 ) {
-    val stringCh: String? = when(characteristic) {
+    val value = when (characteristic) {
         "OS" -> model.value?.phoneOs
         "Display" -> model.value?.phoneDisplay
-        "Refresh rate" -> null
+        "Refresh rate" -> model.value?.phoneRefreshRate?.let { "$it Hz" }
         "Processor" -> model.value?.phoneProcessor
-        "RAM" -> null
-        "Battery capacity" -> null
-        "Storage" -> null
+        "RAM" -> model.value?.phoneRam?.let { "$it GB" }
+        "Battery capacity" -> model.value?.phoneBatteryCapacity?.let { "$it mAh" }
+        "Storage" -> model.value?.phoneStorage?.let { "$it GB" }
         else -> model.value?.phoneModel
-    }
-    val intCh: Int? = when(characteristic) {
-        "OS" -> null
-        "Display" -> null
-        "Refresh rate" -> model.value?.phoneRefreshRate
-        "Processor" -> null
-        "RAM" -> model.value?.phoneRam
-        "Battery capacity" -> model.value?.phoneBatteryCapacity
-        "Storage" -> model.value?.phoneStorage
-        else -> null
-    }
-    Row(
-
-    ) {
+    } ?: "—"
+    Row {
         Text(
             text = characteristic,
             modifier = Modifier
@@ -54,7 +42,7 @@ fun CharacteristicsTable(
 
         )
         Text(
-            text = stringCh ?: "$intCh",
+            text = value,
             modifier = Modifier
                 .weight(1f)
                 .border(
