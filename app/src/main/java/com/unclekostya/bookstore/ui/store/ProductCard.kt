@@ -2,6 +2,7 @@ package com.unclekostya.bookstore.ui.store
 
 import android.content.Context
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,19 +29,27 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.unclekostya.bookstore.R
 import com.unclekostya.bookstore.data.local.entity.Product
+import com.unclekostya.bookstore.ui.viewmodel.ProductsViewModel
 
 @Composable
 fun ProductCard(
     products: Product,
     context: Context,
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(0.7f),
+            .aspectRatio(0.7f)
+            .clickable(onClick = {
+                navController.navigate("product/${products.productId}") {
+                    launchSingleTop = true
+                    popUpTo(navController.graph.startDestinationId) {saveState = true}
+                    restoreState = true
+                }
+            }),
         elevation = CardDefaults.cardElevation(8.dp)
     ) {
         Column(

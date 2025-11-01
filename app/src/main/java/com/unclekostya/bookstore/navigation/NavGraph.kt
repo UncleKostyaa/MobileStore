@@ -39,7 +39,8 @@ fun NavGraph(
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
             ProductScreen(
-                productId = productId
+                productId = productId,
+                productViewModel = productViewModel
             )
 
         }

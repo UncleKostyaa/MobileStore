@@ -49,7 +49,8 @@
                 ProductCard(
                     products = products,
                     context = context,
-                    navController = navController)
+                    navController = navController
+                )
             }
         }
     }

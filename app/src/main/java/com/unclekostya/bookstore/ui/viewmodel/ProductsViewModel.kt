@@ -15,7 +15,10 @@ class ProductsViewModel(
 ): ViewModel() {
     val product = mutableStateOf("Loading products")
     val products = mutableStateOf<List<Product>>(emptyList())
-
+    val productCharacteristic = mutableStateOf("Loading info....")
+    val productCharacteristics = mutableStateOf<ProductCharacteristic?>(null)
+    val productMainInfo = mutableStateOf<Product?>(null)
+    val productMainInfoText = mutableStateOf("Checking....")
     fun getAll() {
         viewModelScope.launch {
             try {
@@ -31,18 +34,29 @@ class ProductsViewModel(
     fun getProductInfoById(
         productId: Int
     ) {
-        val productCharacteristic = mutableStateOf("Loading info....")
-        val productCharacteristics = mutableStateOf<ProductCharacteristic?>(null)
-
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    productCharacteristics.value = repository.getProductCharacteristicById(productId)
+                    productCharacteristics.value = repository.getProductCharacteristicById(productId = productId)
                 }
             } catch (e: Exception) {
                 productCharacteristic.value = "Error: ${e.message}"
             }
         }
 
+    }
+
+    fun getProductById(
+        productId: Int
+    ) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    productMainInfo.value = repository.getProductById(productId = productId)
+                }
+            } catch (e: Exception) {
+                productMainInfoText.value = "Error: ${e.message}"
+            }
+        }
     }
 }
