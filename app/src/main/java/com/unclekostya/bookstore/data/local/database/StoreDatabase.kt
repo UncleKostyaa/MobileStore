@@ -5,12 +5,9 @@ import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
-import com.google.gson.Gson
 import com.unclekostya.bookstore.R
 import com.unclekostya.bookstore.data.local.dao.StoreDao
 import com.unclekostya.bookstore.data.local.entity.Cart
@@ -21,28 +18,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
-class Converters {
-    private val gson = Gson()
-
-    @TypeConverter
-    fun fromIntList(list: List<Int>?): String {
-        return gson.toJson(list)
-    }
-
-    @TypeConverter
-    fun toIntList(data: String?): List<Int> {
-        if (data.isNullOrEmpty()) return emptyList()
-        val type = object : TypeToken<List<Int>>() {}.type
-        return gson.fromJson(data, type)
-    }
-}
 @Database(
     entities = [Product::class, ProductCharacteristic::class, Cart::class],
     version = 1,
-    exportSchema =  false
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
-abstract class ProductDatabase: RoomDatabase() {
+abstract class ProductDatabase : RoomDatabase() {
     abstract fun productDao(): StoreDao
 
     companion object {
@@ -51,33 +33,42 @@ abstract class ProductDatabase: RoomDatabase() {
 
         fun getDatabase(context: Context): ProductDatabase {
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, ProductDatabase::class.java, "product_database")
+                val db = Room.databaseBuilder(context, ProductDatabase::class.java, "product_database")
+                    .fallbackToDestructiveMigration()
                     .addCallback(PrepopulateRoomCallback(context))
                     .build()
-                    .also { Instance = it }
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dao = db.productDao()
+                    db.withTransaction {
+                        prePopulateProduct(context, dao)
+                    }
+                    Log.d("DB", "✅ Forced prepopulate on startup")
+                }
+
+                db.also { Instance = it }
             }
         }
     }
 }
-
 
 class PrepopulateRoomCallback(private val context: Context) : RoomDatabase.Callback() {
     override fun onCreate(db: SupportSQLiteDatabase) {
         super.onCreate(db)
+        Log.d("DB", "🔥 onCreate() called — prepopulating...")
+
         CoroutineScope(Dispatchers.IO).launch {
             val database = ProductDatabase.getDatabase(context)
             val dao = database.productDao()
             database.withTransaction {
-                prePopulateProduct(context,dao)
+                prePopulateProduct(context, dao)
             }
+            Log.d("DB", "✅ Database prepopulated successfully")
         }
     }
 }
 
-suspend fun prePopulateProduct(
-    context: Context,
-    dao: StoreDao
-) {
+suspend fun prePopulateProduct(context: Context, dao: StoreDao) {
     try {
         val root = context.resources.openRawResource(R.raw.products)
             .bufferedReader().use { JSONObject(it.readText()) }
@@ -85,39 +76,39 @@ suspend fun prePopulateProduct(
         val productsArray = root.getJSONArray("products")
         val productCharacteristicArray = root.getJSONArray("productCharacteristics")
 
-        for (pIndex in 0 until productsArray.length()) {
-            val productObject = productsArray.getJSONObject(pIndex)
+        Log.d("DB", "Found ${productsArray.length()} products")
 
-            val productDb = dao.insertProduct(
+        for (i in 0 until productsArray.length()) {
+            val obj = productsArray.getJSONObject(i)
+            dao.insertProduct(
                 Product(
-                    productId = productObject.getInt("productId"),
-                    productName = productObject.getString("productName"),
-                    productCost = productObject.getString("productCost"),
-                    count = productObject.getInt("count"),
-                    productImageUrl = productObject.getString("productImageUrl")
+                    productId = obj.getInt("productId"),
+                    productName = obj.getString("productName"),
+                    productCost = obj.getString("productCost"),
+                    count = obj.getInt("count"),
+                    productImageUrl = obj.getString("productImageUrl")
                 )
             )
+            Log.d("DB", "Inserted: ${obj.getString("productName")}")
         }
 
-        for (pCharacteristicIndex in 0 until productCharacteristicArray.length()) {
-            val productCharacteristicObject = productCharacteristicArray.getJSONObject(pCharacteristicIndex)
-
-            val productCharacteristicDb = dao.insertProductCharacteristic(
+        for (i in 0 until productCharacteristicArray.length()) {
+            val c = productCharacteristicArray.getJSONObject(i)
+            dao.insertProductCharacteristic(
                 ProductCharacteristic(
-                    productId = productCharacteristicObject.getInt("productCharacteristicId"),
-                    phoneModel = productCharacteristicObject.getString("phoneModel"),
-                    phoneOs = productCharacteristicObject.getString("phoneOs"),
-                    phoneDisplay = productCharacteristicObject.getString("phoneDisplay"),
-                    phoneRefreshRate = productCharacteristicObject.getInt("phoneRefreshRate"),
-                    phoneProcessor = productCharacteristicObject.getString("phoneProcessor"),
-                    phoneStorage = productCharacteristicObject.getInt("phoneStorage"),
-                    phoneRam = productCharacteristicObject.getInt("phoneRam"),
-                    phoneBatteryCapacity = productCharacteristicObject.getInt("phoneBatteryCapacity")
+                    productId = c.getInt("productCharacteristicId"),
+                    phoneModel = c.optString("phoneModel", null),
+                    phoneOs = c.optString("phoneOs", null),
+                    phoneDisplay = c.optString("phoneDisplay", null),
+                    phoneRefreshRate = c.optInt("phoneRefreshRate"),
+                    phoneProcessor = c.optString("phoneProcessor", null),
+                    phoneStorage = c.optInt("phoneStorage"),
+                    phoneRam = c.optInt("phoneRam"),
+                    phoneBatteryCapacity = c.optInt("phoneBatteryCapacity")
                 )
             )
         }
-
     } catch (e: Exception) {
-        Log.e("DB", "Error while reading Json: ${e.message}")
+        Log.e("DB", "❌ Error while prepopulating: ${e.message}")
     }
 }

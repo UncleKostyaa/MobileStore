@@ -28,10 +28,10 @@ interface StoreDao{
     @Query("DELETE FROM cart WHERE Id = 1")
     suspend fun clearCart()
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProduct(product: Product)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertProductCharacteristic(productCharacteristic: ProductCharacteristic)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

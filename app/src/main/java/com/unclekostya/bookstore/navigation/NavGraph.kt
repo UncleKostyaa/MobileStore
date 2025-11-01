@@ -9,10 +9,14 @@ import androidx.navigation.navArgument
 import com.unclekostya.bookstore.ui.cart.CartScreen
 import com.unclekostya.bookstore.ui.product.ProductScreen
 import com.unclekostya.bookstore.ui.store.StoreScreen
+import com.unclekostya.bookstore.ui.viewmodel.CartViewModel
+import com.unclekostya.bookstore.ui.viewmodel.ProductsViewModel
 
 @Composable
 fun NavGraph(
-    navController: NavHostController
+    navController: NavHostController,
+    productViewModel: ProductsViewModel,
+    cartViewModel: CartViewModel
 ) {
     NavHost(
         navController = navController,
@@ -20,12 +24,13 @@ fun NavGraph(
     ) {
         composable("store") {
             StoreScreen(
-
+                productViewModel = productViewModel,
+                navController = navController
             )
         }
         composable("cart") {
             CartScreen(
-
+                cartViewModel = cartViewModel
             )
         }
         composable(
