@@ -32,7 +32,7 @@ class CartViewModel (
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                     repository.clearCart()
+                     cart.value = Cart()
                 }
             } catch (e: Exception) {
                 cartStatus.value = "Error: ${e.message}"
@@ -57,6 +57,24 @@ class CartViewModel (
                     repository.insertOrUpdateCart(currentCart)
                     withContext(Dispatchers.Main) {
                         cart.value = currentCart
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun removeItemFromCart(
+        productId: Int
+    )  {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    repository.deletePhoneFromCartById(productId)
+                    val updatedCart = repository.getCart()
+                    withContext(Dispatchers.Main) {
+                        cart.value = updatedCart
                     }
                 }
             } catch (e: Exception) {

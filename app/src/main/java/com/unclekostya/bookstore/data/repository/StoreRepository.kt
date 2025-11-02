@@ -22,4 +22,5 @@ interface StoreRepository {
     suspend fun insertProductCharacteristic(productCharacteristic: ProductCharacteristic)
 
     suspend fun insertOrUpdateCart(cart: Cart)
+    suspend fun deletePhoneFromCartById(productId: Int)
 }

@@ -4,6 +4,7 @@ import com.unclekostya.bookstore.data.local.dao.StoreDao
 import com.unclekostya.bookstore.data.local.entity.Cart
 import com.unclekostya.bookstore.data.local.entity.Product
 import com.unclekostya.bookstore.data.local.entity.ProductCharacteristic
+import okhttp3.internal.filterList
 
 class StoreRepositoryImpl(private val storeDao: StoreDao): StoreRepository {
     override suspend fun getAllProducts(): List<Product> =
@@ -29,4 +30,12 @@ class StoreRepositoryImpl(private val storeDao: StoreDao): StoreRepository {
 
     override suspend fun insertOrUpdateCart(cart: Cart) =
         storeDao.insertOrUpdateCart(cart)
+
+    override suspend fun deletePhoneFromCartById(productId: Int) {
+        val cart = storeDao.getCart() ?: Cart()
+        val updatedList =  cart.listOfProductsId.filterNot { it == productId }
+        val updatedCart = cart.copy(listOfProductsId = updatedList)
+        storeDao.insertOrUpdateCart(updatedCart)
+
+    }
 }
