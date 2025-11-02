@@ -38,12 +38,14 @@ import androidx.room.util.TableInfo
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.unclekostya.bookstore.R
+import com.unclekostya.bookstore.ui.viewmodel.CartViewModel
 import com.unclekostya.bookstore.ui.viewmodel.ProductsViewModel
 
 @Composable
 fun ProductScreen(
     productId: Int,
     productViewModel: ProductsViewModel,
+    cartViewModel: CartViewModel
 ) {
     LaunchedEffect(Unit) {
         productViewModel.getProductById(productId)
@@ -51,7 +53,7 @@ fun ProductScreen(
     }
     val getPhoneInformation = productViewModel.productCharacteristics
     val getPhone = productViewModel.productMainInfo
-    val listOfCharacteristics = listOf<String>(
+    val listOfCharacteristics = listOf(
         "Phone  model",
         "OS",
         "Display",
@@ -90,7 +92,7 @@ fun ProductScreen(
         )
         IconButton(
             onClick = {
-
+                cartViewModel.addItemToCart(getPhone.value?.productId ?: 0)
             },
             modifier = Modifier
                 .padding(top = 120.dp, end = 18.dp)

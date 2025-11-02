@@ -45,10 +45,7 @@ class ProductsViewModel(
         }
 
     }
-
-    fun getProductById(
-        productId: Int
-    ) {
+    fun getProductById(productId: Int) {
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
@@ -58,5 +55,12 @@ class ProductsViewModel(
                 productMainInfoText.value = "Error: ${e.message}"
             }
         }
+    }
+    suspend fun fetchProductById(productId: Int): Product? {
+            return try {
+                repository.getProductById(productId)
+            } catch (e: Exception) {
+                null
+            }
     }
 }

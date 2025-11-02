@@ -30,7 +30,8 @@ fun NavGraph(
         }
         composable("cart") {
             CartScreen(
-                cartViewModel = cartViewModel
+                cartViewModel = cartViewModel,
+                product = productViewModel
             )
         }
         composable(
@@ -40,7 +41,8 @@ fun NavGraph(
             val productId = backStackEntry.arguments?.getInt("productId") ?: return@composable
             ProductScreen(
                 productId = productId,
-                productViewModel = productViewModel
+                productViewModel = productViewModel,
+                cartViewModel = cartViewModel
             )
 
         }

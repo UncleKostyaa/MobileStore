@@ -47,6 +47,9 @@ class CartViewModel (
             try {
                 withContext(Dispatchers.IO) {
                     var currentCart = repository.getCart()
+                    if (currentCart == null) {
+                        currentCart = Cart()
+                    }
                     if (!currentCart.listOfProductsId.contains(productId)) {
                         val updatedList = currentCart.listOfProductsId + productId
                         currentCart = currentCart.copy(listOfProductsId = updatedList)
